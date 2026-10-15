@@ -12,5 +12,10 @@ class BareApplication : Application(), SingletonImageLoader.Factory, PlaybackDep
 
     override val playbackDependencies: PlaybackDependencies get() = container
 
+    override fun onCreate() {
+        super.onCreate()
+        registerActivityLifecycleCallbacks(container.activityTracker)
+    }
+
     override fun newImageLoader(context: PlatformContext): ImageLoader = BareImageLoader.create(context)
 }

@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -52,7 +54,12 @@ internal fun SettingsScreen(appVersion: String) {
         SetFolderExcludedUseCase(deps.preferencesRepository, deps.libraryRepository)
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title)) }) }) { padding ->
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title)) }) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { padding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -137,6 +144,7 @@ internal fun SettingsScreen(appVersion: String) {
             )
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SupportSection(deps.tipJar, snackbarHostState)
             SectionHeader(stringResource(R.string.section_about))
             Column(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
                 Text(stringResource(R.string.privacy_statement), style = MaterialTheme.typography.bodyMedium)
@@ -157,7 +165,7 @@ internal fun SettingsScreen(appVersion: String) {
 }
 
 @Composable
-private fun SectionHeader(text: String) {
+internal fun SectionHeader(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleSmall,

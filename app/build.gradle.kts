@@ -64,6 +64,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     implementation(project(":core:playback"))
+    implementation(project(":core:billing"))
     implementation(project(":core:ui"))
     implementation(project(":feature:library"))
     implementation(project(":feature:player"))

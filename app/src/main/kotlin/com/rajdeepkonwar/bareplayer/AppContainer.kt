@@ -1,6 +1,8 @@
 package com.rajdeepkonwar.bareplayer
 
 import android.app.Application
+import com.rajdeepkonwar.bareplayer.core.billing.ForegroundActivityTracker
+import com.rajdeepkonwar.bareplayer.core.billing.PlayTipJar
 import com.rajdeepkonwar.bareplayer.core.data.db.BareDatabase
 import com.rajdeepkonwar.bareplayer.core.data.repository.DataStorePreferences
 import com.rajdeepkonwar.bareplayer.core.data.repository.DefaultLibraryRepository
@@ -15,6 +17,7 @@ import com.rajdeepkonwar.bareplayer.core.domain.repository.PlayHistoryRepository
 import com.rajdeepkonwar.bareplayer.core.domain.repository.PlaylistRepository
 import com.rajdeepkonwar.bareplayer.core.domain.repository.PreferencesRepository
 import com.rajdeepkonwar.bareplayer.core.domain.repository.QueueRepository
+import com.rajdeepkonwar.bareplayer.core.domain.tips.TipJar
 import com.rajdeepkonwar.bareplayer.core.playback.PlaybackDependencies
 import com.rajdeepkonwar.bareplayer.core.playback.PlayerConnection
 import kotlinx.coroutines.CoroutineScope
@@ -49,4 +52,7 @@ class AppContainer(private val application: Application) : AppDependencies, Play
 
     val playerConnection: PlayerConnection by lazy { PlayerConnection(application) }
     override val playbackController get() = playerConnection
+
+    val activityTracker = ForegroundActivityTracker()
+    override val tipJar: TipJar by lazy { PlayTipJar(application, activityTracker) }
 }

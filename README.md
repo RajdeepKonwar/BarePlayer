@@ -160,6 +160,7 @@ album and requested at thumbnail size.
 | DataStore | Theme and scan-token preferences |
 | Coil 3 (compose only) | Downsampled, memory-cached artwork for smooth scrolling |
 | profileinstaller | Applies the Baseline Profile for fast cold start |
+| Play Billing (`:core:billing`) | Optional tip jar. Billing talks to the Play Store app over IPC, so it works without `INTERNET`; the library's own logging dependency asks for network permissions, which the app manifest strips |
 | kotlinx-serialization-core | Type-safe navigation routes |
 | Test: JUnit, coroutines-test, Turbine, Robolectric | JVM tests, including Room and cursor mapping |
 

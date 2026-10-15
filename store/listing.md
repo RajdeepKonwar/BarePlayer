@@ -42,6 +42,9 @@ MADE FOR YOUR PHONE
 PRIVATE BY DESIGN
 BarePlayer does not request internet permission, so it cannot send anything anywhere. There are no ads, no trackers, no crash reporters and no sign-in. It only reads the audio files on your device to build your library.
 
+FREE, WITH OPTIONAL TIPS
+Every feature is free. If you enjoy BarePlayer, you can leave a one-time tip from Settings to support its development. Tips are handled by Google Play and unlock nothing.
+
 ## Category
 
 Music & Audio
@@ -63,6 +66,16 @@ Music player, Offline, Audio player
 | App icon, 512×512 | `design/icon/play_store_icon_512.png` |
 | Feature graphic, 1024×500 | `store/feature_graphic_1024x500.png` |
 | Phone screenshots, 1080×1920 | `store/screenshots/*.png` |
+
+## In-app products (Monetize → Products → In-app products)
+
+Create three one-time products. IDs must match exactly; prices are suggestions.
+
+| Product ID | Name | Description | Suggested price |
+| --- | --- | --- | --- |
+| `tip_small` | Small tip | A small thank-you. Unlocks nothing. | $0.99 |
+| `tip_medium` | Medium tip | A generous thank-you. Unlocks nothing. | $2.99 |
+| `tip_large` | Large tip | A huge thank-you. Unlocks nothing. | $4.99 |
 
 ## Release notes for 1.0.0 (max 500)
 
