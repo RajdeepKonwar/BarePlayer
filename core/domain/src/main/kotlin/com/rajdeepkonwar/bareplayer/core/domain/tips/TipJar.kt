@@ -8,11 +8,16 @@ data class TipProduct(
     val id: String,
     val title: String,
     val formattedPrice: String,
+    /** Visually emphasized as the suggested tip. */
+    val featured: Boolean = false,
 )
 
 data class TipJarState(
     val status: Status = Status.Loading,
+    /** The main tip buttons, cheapest first. */
     val products: List<TipProduct> = emptyList(),
+    /** Preset amounts for "Choose your amount", cheapest first. */
+    val customAmounts: List<TipProduct> = emptyList(),
     val isSupporter: Boolean = false,
     /** Debug builds show sample tips that never charge anything. */
     val isPreview: Boolean = false,

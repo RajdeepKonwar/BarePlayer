@@ -192,7 +192,7 @@ material-icons-extended (icons are bundled vectors), any network, analytics, or 
 - [x] Backup rules exclude the rebuildable library database
 - [ ] Play Console: declare the `mediaPlayback` foreground service use (video of background playback)
 - [ ] Play Console Data safety: "No data collected", "No data shared" (check Google's current guidance for apps using Play Billing)
-- [ ] Payments profile set up, and in-app products `tip_small`, `tip_medium`, `tip_large` created (see `store/listing.md`). Tips only appear in builds installed from Play, including internal testing
+- [ ] Payments profile set up, and the tip in-app products created (`tip_coffee`, `tip_lunch`, `tip_feature` and `tip_custom_*`; see `store/listing.md`). Tips only appear in builds installed from Play, including internal testing
 - [ ] Privacy policy URL: host `docs/privacy-policy.html` (e.g. GitHub Pages from the `docs/` folder) after replacing `CONTACT_EMAIL`
 - [ ] Store listing: text in `store/listing.md`, screenshots in `store/screenshots/`, feature graphic `store/feature_graphic_1024x500.png`, icon `design/icon/play_store_icon_512.png`
 - [ ] Upload key and Play App Signing; `keystore.properties` for local release builds

@@ -3,7 +3,6 @@ package com.rajdeepkonwar.bareplayer.core.billing
 import com.rajdeepkonwar.bareplayer.core.domain.tips.TipJar
 import com.rajdeepkonwar.bareplayer.core.domain.tips.TipJarEvent
 import com.rajdeepkonwar.bareplayer.core.domain.tips.TipJarState
-import com.rajdeepkonwar.bareplayer.core.domain.tips.TipProduct
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,15 +15,14 @@ import kotlinx.coroutines.flow.update
 /** Debug-only stand-in for [PlayTipJar]: sample prices, and tipping just shows the thank-you flow. */
 class PreviewTipJar : TipJar {
     private val _state = MutableStateFlow(
-        TipJarState(
-            status = TipJarState.Status.Ready,
-            products = listOf(
-                TipProduct("tip_small", "Small tip", "$0.99"),
-                TipProduct("tip_medium", "Medium tip", "$2.99"),
-                TipProduct("tip_large", "Large tip", "$4.99"),
-            ),
-            isPreview = true,
-        ),
+        TipCatalog.toProducts(SAMPLE_OFFERS).let { products ->
+            TipJarState(
+                status = TipJarState.Status.Ready,
+                products = products.main,
+                customAmounts = products.custom,
+                isPreview = true,
+            )
+        },
     )
     override val state: StateFlow<TipJarState> = _state.asStateFlow()
 
@@ -36,5 +34,16 @@ class PreviewTipJar : TipJar {
     override fun tip(productId: String) {
         _state.update { it.copy(isSupporter = true) }
         _events.tryEmit(TipJarEvent.Thanks)
+    }
+
+    private companion object {
+        val SAMPLE_OFFERS = listOf(
+            TipCatalog.Offer("tip_coffee", "Coffee", "$1.99", 1_990_000),
+            TipCatalog.Offer("tip_lunch", "Lunch", "$4.99", 4_990_000),
+            TipCatalog.Offer("tip_feature", "Feature", "$9.99", 9_990_000),
+        ) + TipCatalog.CUSTOM_IDS.map { id ->
+            val dollars = id.removePrefix("tip_custom_").toLong()
+            TipCatalog.Offer(id, "$$dollars tip", "$$dollars.00", dollars * 1_000_000)
+        }
     }
 }

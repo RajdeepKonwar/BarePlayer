@@ -29,6 +29,12 @@
     <string name="support_footnote">Tips are one-time payments through Google Play and don\'t unlock anything.</string>
     <string name="support_preview_footnote">Debug preview: sample prices, and no payment is made. Release builds use Google Play.</string>
     <string name="tip_button">%1$s · %2$s</string>
+    <string name="tip_coffee">Buy me a coffee</string>
+    <string name="tip_lunch">Buy me lunch</string>
+    <string name="tip_feature">Fund a new feature</string>
+    <string name="tip_choose_amount">Choose your amount…</string>
+    <string name="tip_choose_amount_title">Choose your tip</string>
+    <string name="tip_amount_confirm">Tip %1$s</string>
     <string name="tip_thanks">Thank you for the tip!</string>
     <string name="tip_pending">Your tip is pending. It will complete once the payment goes through.</string>
     <string name="tip_failed">The tip couldn\'t be completed. You haven\'t been charged.</string>

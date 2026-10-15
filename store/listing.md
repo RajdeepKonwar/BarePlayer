@@ -69,13 +69,34 @@ Music player, Offline, Audio player
 
 ## In-app products (Monetize → Products → In-app products)
 
-Create three one-time products. IDs must match exactly; prices are suggestions.
+Create these one-time products. IDs must match exactly and can never be reused once created. Set the
+USD price; Play converts it for other countries, and you can adjust any country by hand. The app shows
+its own button labels and takes only the price from Play.
 
-| Product ID | Name | Description | Suggested price |
+Main buttons ("Buy me lunch" is highlighted):
+
+| Product ID | Name | Description | Price |
 | --- | --- | --- | --- |
-| `tip_small` | Small tip | A small thank-you. Unlocks nothing. | $0.99 |
-| `tip_medium` | Medium tip | A generous thank-you. Unlocks nothing. | $2.99 |
-| `tip_large` | Large tip | A huge thank-you. Unlocks nothing. | $4.99 |
+| `tip_coffee` | Buy me a coffee | A small thank-you. Unlocks nothing. | $1.99 |
+| `tip_lunch` | Buy me lunch | A generous thank-you. Unlocks nothing. | $4.99 |
+| `tip_feature` | Fund a new feature | A big thank-you. Unlocks nothing. | $9.99 |
+
+"Choose your amount" presets (name them e.g. "$5 tip", description "A thank-you of your choosing. Unlocks nothing."):
+
+| Product ID | Price |
+| --- | --- |
+| `tip_custom_1` | $1.00 |
+| `tip_custom_2` | $2.00 |
+| `tip_custom_3` | $3.00 |
+| `tip_custom_5` | $5.00 |
+| `tip_custom_10` | $10.00 |
+| `tip_custom_15` | $15.00 |
+| `tip_custom_20` | $20.00 |
+| `tip_custom_25` | $25.00 |
+| `tip_custom_50` | $50.00 |
+| `tip_custom_100` | $100.00 |
+
+Any product that isn't created simply doesn't appear in the app.
 
 ## Release notes for 1.0.0 (max 500)
 

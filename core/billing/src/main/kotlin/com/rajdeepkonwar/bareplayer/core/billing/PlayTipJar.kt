@@ -116,7 +116,7 @@ class PlayTipJar(
         client.queryProductDetailsAsync(params) { result, productResult ->
             val list = productResult.productDetailsList
             if (result.responseCode != BillingResponseCode.OK || list.isEmpty()) {
-                _state.update { it.copy(status = Status.Unavailable, products = emptyList()) }
+                _state.update { it.copy(status = Status.Unavailable, products = emptyList(), customAmounts = emptyList()) }
                 return@queryProductDetailsAsync
             }
             details = list.associateBy { it.productId }
@@ -124,7 +124,8 @@ class PlayTipJar(
                 val offer = pd.oneTimePurchaseOfferDetails ?: return@mapNotNull null
                 TipCatalog.Offer(pd.productId, pd.name, offer.formattedPrice, offer.priceAmountMicros)
             }
-            _state.update { it.copy(status = Status.Ready, products = TipCatalog.toProducts(offers)) }
+            val products = TipCatalog.toProducts(offers)
+            _state.update { it.copy(status = Status.Ready, products = products.main, customAmounts = products.custom) }
         }
     }
 
