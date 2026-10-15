@@ -18,9 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -29,20 +31,27 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.rajdeepkonwar.bareplayer.BuildConfig
 import com.rajdeepkonwar.bareplayer.R
 import com.rajdeepkonwar.bareplayer.core.ui.icons.BareIcons
+import com.rajdeepkonwar.bareplayer.feature.library.CollectionRoute
+import com.rajdeepkonwar.bareplayer.feature.library.CollectionType
 import com.rajdeepkonwar.bareplayer.feature.library.LibraryRoute
 import com.rajdeepkonwar.bareplayer.feature.library.libraryGraph
+import com.rajdeepkonwar.bareplayer.feature.library.navigateToCollection
 import com.rajdeepkonwar.bareplayer.feature.player.MiniPlayer
 import com.rajdeepkonwar.bareplayer.feature.player.PlaybackErrorsEffect
 import com.rajdeepkonwar.bareplayer.feature.player.isPlayerDestination
 import com.rajdeepkonwar.bareplayer.feature.player.navigateToNowPlaying
 import com.rajdeepkonwar.bareplayer.feature.player.playerGraph
+import com.rajdeepkonwar.bareplayer.feature.playlists.AddToPlaylistDialog
 import com.rajdeepkonwar.bareplayer.feature.playlists.PlaylistsRoute
-import com.rajdeepkonwar.bareplayer.feature.playlists.playlistsScreen
+import com.rajdeepkonwar.bareplayer.feature.playlists.playlistsGraph
 import com.rajdeepkonwar.bareplayer.feature.settings.SettingsRoute
 import com.rajdeepkonwar.bareplayer.feature.settings.settingsScreen
+import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
+import com.rajdeepkonwar.bareplayer.feature.playlists.R as PlaylistsR
 
 private enum class TopLevelDestination(
     val route: Any,
@@ -62,6 +71,8 @@ fun BareApp() {
     val destination = backStackEntry?.destination
     val fullScreenPlayer = destination?.isPlayerDestination() == true
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val resources = LocalContext.current.resources
     var pendingAddToPlaylist by rememberSaveable { mutableStateOf<List<Long>?>(null) }
     val onAddToPlaylist: (List<Long>) -> Unit = { pendingAddToPlaylist = it }
 
@@ -102,8 +113,27 @@ fun BareApp() {
         ) {
             libraryGraph(navController, onAddToPlaylist)
             playerGraph(navController, onAddToPlaylist)
-            playlistsScreen()
-            settingsScreen()
+            playlistsGraph(
+                navController = navController,
+                onAddToPlaylist = onAddToPlaylist,
+                onOpenAlbum = { navController.navigateToCollection(CollectionRoute(CollectionType.ALBUM, id = it)) },
+                onOpenArtist = { navController.navigateToCollection(CollectionRoute(CollectionType.ARTIST, id = it)) },
+            )
+            settingsScreen(appVersion = BuildConfig.VERSION_NAME)
         }
+    }
+
+    pendingAddToPlaylist?.let { trackIds ->
+        AddToPlaylistDialog(
+            trackIds = trackIds,
+            onAdded = { result ->
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        resources.getString(PlaylistsR.string.added_to_playlist, result.playlistName),
+                    )
+                }
+            },
+            onDismiss = { pendingAddToPlaylist = null },
+        )
     }
 }

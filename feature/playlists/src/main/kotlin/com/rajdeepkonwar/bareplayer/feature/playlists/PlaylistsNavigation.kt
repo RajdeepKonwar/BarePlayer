@@ -1,19 +1,36 @@
 package com.rajdeepkonwar.bareplayer.feature.playlists
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.rajdeepkonwar.bareplayer.feature.playlists.detail.PlaylistDetailScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object PlaylistsRoute
 
-fun NavGraphBuilder.playlistsScreen() {
+@Serializable
+data class PlaylistDetailRoute(val playlistId: Long)
+
+fun NavGraphBuilder.playlistsGraph(
+    navController: NavController,
+    onAddToPlaylist: (List<Long>) -> Unit,
+    onOpenAlbum: (Long) -> Unit,
+    onOpenArtist: (Long) -> Unit,
+) {
     composable<PlaylistsRoute> {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Playlists") }
+        PlaylistsScreen(
+            onOpenPlaylist = { id -> navController.navigate(PlaylistDetailRoute(id)) { launchSingleTop = true } },
+        )
+    }
+    composable<PlaylistDetailRoute> { entry ->
+        PlaylistDetailScreen(
+            playlistId = entry.toRoute<PlaylistDetailRoute>().playlistId,
+            onBack = navController::popBackStack,
+            onAddToPlaylist = onAddToPlaylist,
+            onOpenAlbum = onOpenAlbum,
+            onOpenArtist = onOpenArtist,
+        )
     }
 }

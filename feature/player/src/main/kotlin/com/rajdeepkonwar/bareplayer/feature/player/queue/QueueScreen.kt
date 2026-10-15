@@ -2,7 +2,6 @@ package com.rajdeepkonwar.bareplayer.feature.player.queue
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -54,6 +52,8 @@ import com.rajdeepkonwar.bareplayer.core.model.QueueItem
 import com.rajdeepkonwar.bareplayer.core.ui.LocalAppDependencies
 import com.rajdeepkonwar.bareplayer.core.ui.components.ArtImage
 import com.rajdeepkonwar.bareplayer.core.ui.components.EmptyState
+import com.rajdeepkonwar.bareplayer.core.ui.components.ReorderState
+import com.rajdeepkonwar.bareplayer.core.ui.components.reorderHandle
 import com.rajdeepkonwar.bareplayer.core.ui.components.artistLabel
 import com.rajdeepkonwar.bareplayer.core.ui.icons.BareIcons
 import com.rajdeepkonwar.bareplayer.feature.player.R
@@ -139,16 +139,7 @@ internal fun QueueScreen(onBack: () -> Unit) {
                         isCurrent = index == state.currentQueuePosition && reorder.draggingIndex == null,
                         elevated = dragging,
                         onClick = { playback.playQueuePosition(index) },
-                        dragHandle = Modifier.pointerInput(keys[index]) {
-                            detectDragGestures(
-                                onDragStart = { reorder.onDragStart(index) },
-                                onDragEnd = { reorder.onDragEnd()?.let { (from, to) -> playback.moveQueueItem(from, to) } },
-                                onDragCancel = { reorder.onDragEnd()?.let { (from, to) -> playback.moveQueueItem(from, to) } },
-                            ) { change, amount ->
-                                change.consume()
-                                reorder.onDrag(amount.y)
-                            }
-                        },
+                        dragHandle = Modifier.reorderHandle(reorder, keys[index], index, items.size, playback::moveQueueItem),
                         modifier = Modifier.semantics {
                             customActions = buildList {
                                 if (index > 0) add(CustomAccessibilityAction(moveUp) { playback.moveQueueItem(index, index - 1); true })

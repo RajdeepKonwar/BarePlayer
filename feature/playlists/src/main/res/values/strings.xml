@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="playlists_title">Playlists</string>
+    <string name="new_playlist">New playlist</string>
+    <string name="default_playlist_name">My playlist</string>
+    <string name="playlist_name">Name</string>
+    <string name="create">Create</string>
+    <string name="rename">Rename</string>
+    <string name="rename_playlist">Rename playlist</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_playlist_title">Delete playlist</string>
+    <string name="delete_playlist_body">Delete “%1$s”? The songs stay in your library.</string>
+    <string name="no_playlists">No playlists yet. Create one, or add songs from any list\'s menu.</string>
+    <string name="playlist_empty">This playlist is empty. Add songs from the library using a song\'s menu.</string>
+    <string name="remove_from_playlist">Remove from playlist</string>
+    <string name="reorder">Drag to reorder</string>
+    <string name="added_to_playlist">Added to “%1$s”</string>
+</resources>
