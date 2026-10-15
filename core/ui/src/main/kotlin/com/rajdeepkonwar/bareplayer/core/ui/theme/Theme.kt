@@ -1,6 +1,7 @@
 package com.rajdeepkonwar.bareplayer.core.ui.theme
 
 import android.os.Build
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +65,7 @@ fun isDarkTheme(themeMode: ThemeMode): Boolean = when (themeMode) {
     ThemeMode.DARK -> true
 }
 
+@get:ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
 val supportsDynamicColor: Boolean get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
 @Composable

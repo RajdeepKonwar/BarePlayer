@@ -21,7 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -90,7 +90,7 @@ fun MiniPlayer(onOpen: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 fun PlaybackErrorsEffect(snackbarHostState: SnackbarHostState) {
     val playback = LocalAppDependencies.current.playbackController
-    val resources = LocalContext.current.resources
+    val resources = LocalResources.current
     LaunchedEffect(playback) {
         playback.errors.collect { error ->
             val title = error.title?.takeIf { it.isNotBlank() } ?: resources.getString(R.string.this_track)

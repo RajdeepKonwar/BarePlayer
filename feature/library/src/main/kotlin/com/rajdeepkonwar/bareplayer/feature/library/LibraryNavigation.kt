@@ -1,5 +1,6 @@
 package com.rajdeepkonwar.bareplayer.feature.library
 
+import androidx.annotation.Keep
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -14,6 +15,7 @@ data object LibraryRoute
 @Serializable
 data object SearchRoute
 
+@Keep
 enum class CollectionType { ALBUM, ARTIST, GENRE, FOLDER }
 
 /** A list of tracks grouped by album, artist, genre ([key] = name) or folder ([key] = path). */

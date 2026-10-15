@@ -3,6 +3,7 @@ package com.rajdeepkonwar.bareplayer.core.playback
 import android.content.ContentUris
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.rajdeepkonwar.bareplayer.core.model.ArtKey
@@ -25,10 +26,10 @@ private const val EXTRA_ALBUM_ID = "album_id"
 private const val EXTRA_FOLDER = "folder"
 private const val EXTRA_URI = "uri"
 
-private val ALBUM_ART: Uri = Uri.parse("content://media/external/audio/albumart")
+private val ALBUM_ART: Uri = "content://media/external/audio/albumart".toUri()
 
 internal fun Track.toMediaItem(): MediaItem {
-    val uri = Uri.parse(uri)
+    val uri = uri.toUri()
     val extras = Bundle(3).apply {
         putLong(EXTRA_ALBUM_ID, albumId)
         putString(EXTRA_FOLDER, folderPath)
@@ -63,7 +64,7 @@ internal fun Track.toMediaItem(): MediaItem {
 internal fun MediaItem.withPlayableUri(): MediaItem {
     if (localConfiguration != null) return this
     val uri = requestMetadata.mediaUri
-        ?: mediaMetadata.extras?.getString(EXTRA_URI)?.let(Uri::parse)
+        ?: mediaMetadata.extras?.getString(EXTRA_URI)?.toUri()
         ?: return this
     return buildUpon().setUri(uri).build()
 }

@@ -139,7 +139,9 @@ internal fun QueueScreen(onBack: () -> Unit) {
                         isCurrent = index == state.currentQueuePosition && reorder.draggingIndex == null,
                         elevated = dragging,
                         onClick = { playback.playQueuePosition(index) },
-                        dragHandle = Modifier.reorderHandle(reorder, keys[index], index, items.size, playback::moveQueueItem),
+                        dragHandle = {
+                            DragHandle(Modifier.reorderHandle(reorder, keys[index], index, items.size, playback::moveQueueItem))
+                        },
                         modifier = Modifier.semantics {
                             customActions = buildList {
                                 if (index > 0) add(CustomAccessibilityAction(moveUp) { playback.moveQueueItem(index, index - 1); true })
@@ -194,7 +196,7 @@ private fun QueueRow(
     isCurrent: Boolean,
     elevated: Boolean,
     onClick: () -> Unit,
-    dragHandle: Modifier,
+    dragHandle: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -228,16 +230,18 @@ private fun QueueRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = dragHandle.size(48.dp),
-            ) {
-                Icon(
-                    painterResource(BareIcons.DragHandle),
-                    contentDescription = stringResource(R.string.reorder),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            dragHandle()
         }
+    }
+}
+
+@Composable
+private fun DragHandle(modifier: Modifier) {
+    Box(contentAlignment = Alignment.Center, modifier = modifier.size(48.dp)) {
+        Icon(
+            painterResource(BareIcons.DragHandle),
+            contentDescription = stringResource(R.string.reorder),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

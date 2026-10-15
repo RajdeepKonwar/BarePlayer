@@ -6,6 +6,7 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.util.Size
+import androidx.core.net.toUri
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.decode.DataSource
@@ -39,7 +40,7 @@ class ArtFetcher(
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult? = withContext(Dispatchers.IO) {
-        val trackUri = Uri.parse(key.trackUri)
+        val trackUri = key.trackUri.toUri()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             loadThumbnail(trackUri)?.let { return@withContext it }
         } else {
@@ -105,7 +106,7 @@ class ArtFetcher(
 
     private companion object {
         const val DEFAULT_SIZE_PX = 512
-        val LEGACY_ALBUM_ART: Uri = Uri.parse("content://media/external/audio/albumart")
+        val LEGACY_ALBUM_ART: Uri = "content://media/external/audio/albumart".toUri()
         val FOLDER_ART_NAMES = listOf(
             "cover.jpg", "cover.png", "folder.jpg", "folder.png",
             "Cover.jpg", "Cover.png", "Folder.jpg", "Folder.png", "AlbumArt.jpg",

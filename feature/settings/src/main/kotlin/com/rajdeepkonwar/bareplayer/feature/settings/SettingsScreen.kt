@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -113,7 +114,7 @@ internal fun SettingsScreen(appVersion: String) {
                     text = when (val s = scanState) {
                         ScanState.Idle -> stringResource(R.string.scan_idle)
                         ScanState.Scanning -> stringResource(R.string.scan_running)
-                        is ScanState.Done -> stringResource(R.string.scan_done, s.trackCount)
+                        is ScanState.Done -> pluralStringResource(R.plurals.scan_done, s.trackCount, s.trackCount)
                         is ScanState.Failed -> stringResource(R.string.scan_failed, s.message)
                     },
                     style = MaterialTheme.typography.bodyMedium,

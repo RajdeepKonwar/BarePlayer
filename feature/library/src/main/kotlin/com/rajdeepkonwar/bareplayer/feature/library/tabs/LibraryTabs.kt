@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -91,7 +92,11 @@ internal fun SongsTab(viewModel: LibraryViewModel, menu: TrackMenuActions) {
         TabContent(tracks, scanState, BareIcons.MusicNote) { list ->
             val listState = rememberLazyListState()
             Box(Modifier.fillMaxSize()) {
-                LazyColumn(state = listState, contentPadding = ListBottomPadding, modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    state = listState,
+                    contentPadding = ListBottomPadding,
+                    modifier = Modifier.fillMaxSize().testTag("songs_list"),
+                ) {
                     item(key = "header", contentType = "header") {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
