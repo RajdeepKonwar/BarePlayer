@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.LibraryExtension
 import com.rajdeepkonwar.bareplayer.buildlogic.configureKotlinJvmTarget
 import com.rajdeepkonwar.bareplayer.buildlogic.configureLint
+import com.rajdeepkonwar.bareplayer.buildlogic.configureTestJvm
 import com.rajdeepkonwar.bareplayer.buildlogic.int
 import com.rajdeepkonwar.bareplayer.buildlogic.lib
 import com.rajdeepkonwar.bareplayer.buildlogic.libs
@@ -31,6 +32,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             lint { configureLint(target) }
         }
         configureKotlinJvmTarget()
+        configureTestJvm()
 
         dependencies {
             add("testImplementation", libs.lib("junit"))

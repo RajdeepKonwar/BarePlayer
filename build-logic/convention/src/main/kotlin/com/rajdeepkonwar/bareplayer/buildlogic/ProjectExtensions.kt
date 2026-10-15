@@ -6,6 +6,7 @@ import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -24,6 +25,17 @@ internal fun Project.configureKotlinJvmTarget() {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
+    }
+}
+
+/**
+ * Forwards a custom trust store type (e.g. Windows-ROOT behind a TLS-inspecting proxy, set in the
+ * user's ~/.gradle/gradle.properties) to test JVMs, which Robolectric uses to fetch Android jars.
+ */
+internal fun Project.configureTestJvm() {
+    val trustStoreType = providers.systemProperty("javax.net.ssl.trustStoreType")
+    tasks.withType<Test>().configureEach {
+        trustStoreType.orNull?.let { systemProperty("javax.net.ssl.trustStoreType", it) }
     }
 }
 

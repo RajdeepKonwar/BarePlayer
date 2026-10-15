@@ -4,6 +4,7 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.rajdeepkonwar.bareplayer.buildlogic.VerifyNoNetworkPermissionTask
 import com.rajdeepkonwar.bareplayer.buildlogic.configureKotlinJvmTarget
 import com.rajdeepkonwar.bareplayer.buildlogic.configureLint
+import com.rajdeepkonwar.bareplayer.buildlogic.configureTestJvm
 import com.rajdeepkonwar.bareplayer.buildlogic.int
 import com.rajdeepkonwar.bareplayer.buildlogic.libs
 import org.gradle.api.JavaVersion
@@ -30,6 +31,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             lint { configureLint(target) }
         }
         configureKotlinJvmTarget()
+        configureTestJvm()
 
         val verifyAll = tasks.register("verifyNoInternetPermission") {
             group = "verification"

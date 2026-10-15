@@ -9,12 +9,12 @@ object SearchQuery {
 
     /**
      * Builds an FTS4 MATCH expression where every token must prefix-match, e.g. "beat it" ->
-     * `"beat"* "it"*`. Returns null when the input has no searchable characters.
+     * `"beat*" "it*"`. Returns null when the input has no searchable characters.
      */
     fun toFtsMatch(input: String): String? {
         val tokens = tokens(input)
         if (tokens.isEmpty()) return null
-        return tokens.joinToString(" ") { "\"$it\"*" }
+        return tokens.joinToString(" ") { "\"$it*\"" }
     }
 
     /** A LIKE pattern for substring matches, with SQL wildcards escaped using '\'. */
