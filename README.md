@@ -188,7 +188,7 @@ material-icons-extended (icons are bundled vectors), any network, analytics, or 
 - [ ] Play Console: declare the `mediaPlayback` foreground service use (video of background playback)
 - [ ] Play Console Data safety: "No data collected", "No data shared"
 - [ ] Privacy policy URL (required for apps reading media). A one-page "BarePlayer collects no data and has no network access" policy hosted anywhere public
-- [ ] Final app name, icon and store listing (the current icon is a placeholder)
+- [ ] Final app name and store listing (the 512 px store icon is `design/icon/play_store_icon_512.png`; vector source `design/icon/bareplayer_icon.svg`)
 - [ ] Upload key and Play App Signing; `keystore.properties` for local release builds
 - [ ] Generate and commit the Baseline Profile; upload an AAB (`./gradlew bundleRelease`)
 

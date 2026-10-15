@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2B2A8C"/>
+      <stop offset="1" stop-color="#7342E8"/>
+    </linearGradient>
+  </defs>
+  <rect width="108" height="108" fill="url(#bg)"/>
+  <!-- Stem and upper bowl of the B -->
+  <path fill="#FFFFFF" fill-rule="evenodd"
+        d="M37,29 H55 A12,12 0 0 1 55,53 H47 V79 H37 Z M47,37 V45 H55 A4,4 0 0 0 55,37 Z"/>
+  <!-- Lower bowl: a vinyl record -->
+  <circle cx="57" cy="63" r="17" fill="#FFFFFF"/>
+  <circle cx="57" cy="63" r="13.5" fill="none" stroke="#4A39C9" stroke-width="0.9"/>
+  <circle cx="57" cy="63" r="10.5" fill="none" stroke="#4A39C9" stroke-width="0.9"/>
+  <circle cx="57" cy="63" r="6" fill="#4A39C9"/>
+  <circle cx="57" cy="63" r="1.8" fill="#FFFFFF"/>
+</svg>
