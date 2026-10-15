@@ -32,7 +32,13 @@ class AppContainer(private val application: Application) : AppDependencies, Play
     private val preferences by lazy { DataStorePreferences(application) }
 
     val librarySync by lazy {
-        LibrarySync(database, MediaStoreScanner(application), preferences, applicationScope)
+        LibrarySync(
+            database = database,
+            scanner = MediaStoreScanner(application),
+            tokenStore = preferences,
+            scope = applicationScope,
+            excludedFolders = preferences::excludedFolders,
+        )
     }
 
     override val libraryRepository: LibraryRepository by lazy { DefaultLibraryRepository(database, librarySync) }

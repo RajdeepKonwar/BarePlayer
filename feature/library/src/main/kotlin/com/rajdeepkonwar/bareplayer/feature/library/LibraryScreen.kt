@@ -52,7 +52,9 @@ internal fun LibraryScreen(
     onAddToPlaylist: (List<Long>) -> Unit,
 ) {
     val deps = LocalAppDependencies.current
-    val viewModel = viewModel { LibraryViewModel(deps.libraryRepository, deps.playbackController) }
+    val viewModel = viewModel {
+        LibraryViewModel(deps.libraryRepository, deps.playbackController, deps.preferencesRepository)
+    }
     val scanState by viewModel.scanState.collectAsStateWithLifecycle()
     val menu = rememberTrackMenu(viewModel.playback, onAddToPlaylist, onOpenCollection)
     val pagerState = rememberPagerState { LibraryTab.entries.size }

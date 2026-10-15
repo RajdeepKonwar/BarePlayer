@@ -76,6 +76,40 @@ class LibrarySyncTest {
     }
 
     @Test
+    fun excludedFolders_areNotIndexedAndComeBackWhenIncluded() = runTest {
+        var excluded = setOf("/storage/emulated/0/Recordings")
+        val sync = LibrarySync(db, scanner, tokens, TestScope(), excludedFolders = { excluded })
+        scanner.tracks = listOf(
+            track(1, folder = "/storage/emulated/0/Music"),
+            track(2, folder = "/storage/emulated/0/Recordings"),
+            track(3, folder = "/storage/emulated/0/Recordings/2026"),
+        )
+        val repo = DefaultLibraryRepository(db, sync)
+
+        sync.sync(force = true)
+        assertEquals(listOf(1L), repo.tracks().first().map { it.id })
+
+        excluded = emptySet()
+        sync.sync(force = true)
+        assertEquals(setOf(1L, 2L, 3L), repo.tracks().first().map { it.id }.toSet())
+    }
+
+    @Test
+    fun changedExclusions_invalidateTheSkipToken() = runTest {
+        var excluded = emptySet<String>()
+        val sync = LibrarySync(db, scanner, tokens, TestScope(), excludedFolders = { excluded })
+        scanner.token = "v1:5"
+        scanner.tracks = listOf(track(1, folder = "/music/a"))
+        sync.sync(force = false)
+        assertEquals(1, scanner.scanCount)
+
+        excluded = setOf("/music/a")
+        sync.sync(force = false)
+        assertEquals(2, scanner.scanCount)
+        assertEquals(0, db.trackDao().count())
+    }
+
+    @Test
     fun scannerFailure_reportsFailedState() = runTest {
         scanner.failure = SecurityException("no permission")
         val sync = sync()

@@ -3,7 +3,9 @@ package com.rajdeepkonwar.bareplayer.feature.library
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rajdeepkonwar.bareplayer.core.domain.playback.PlaybackController
+import com.rajdeepkonwar.bareplayer.core.domain.library.SetFolderExcludedUseCase
 import com.rajdeepkonwar.bareplayer.core.domain.repository.LibraryRepository
+import com.rajdeepkonwar.bareplayer.core.domain.repository.PreferencesRepository
 import com.rajdeepkonwar.bareplayer.core.model.Album
 import com.rajdeepkonwar.bareplayer.core.model.Artist
 import com.rajdeepkonwar.bareplayer.core.model.Folder
@@ -22,7 +24,9 @@ import kotlin.random.Random
 class LibraryViewModel(
     private val library: LibraryRepository,
     val playback: PlaybackController,
+    preferences: PreferencesRepository,
 ) : ViewModel() {
+    private val setFolderExcluded = SetFolderExcludedUseCase(preferences, library)
 
     // Each tab collects only its own flow; null means "still loading".
     val tracks: StateFlow<List<Track>?> = library.tracks().stateInVm()
@@ -47,6 +51,10 @@ class LibraryViewModel(
 
     fun rescan() {
         viewModelScope.launch { library.refresh(force = true) }
+    }
+
+    fun excludeFolder(path: String) {
+        viewModelScope.launch { setFolderExcluded(path, excluded = true) }
     }
 
     private fun <T> Flow<List<T>>.stateInVm(): StateFlow<List<T>?> =

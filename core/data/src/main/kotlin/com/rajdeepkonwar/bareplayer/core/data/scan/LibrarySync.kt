@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import androidx.room.withTransaction
 import com.rajdeepkonwar.bareplayer.core.data.db.BareDatabase
 import com.rajdeepkonwar.bareplayer.core.data.db.toEntity
+import com.rajdeepkonwar.bareplayer.core.domain.library.FolderFilter
 import com.rajdeepkonwar.bareplayer.core.domain.library.LibraryDiff
 import com.rajdeepkonwar.bareplayer.core.model.ScanState
 import kotlinx.coroutines.CancellationException
@@ -28,14 +29,16 @@ interface ScanTokenStore {
 }
 
 /**
- * Keeps the Room index in sync with MediaStore: a scan on start (skipped when the MediaStore change
- * token is unchanged) and debounced rescans whenever MediaStore reports a change.
+ * Keeps the Room index in sync with MediaStore: a scan on start (skipped when neither the MediaStore
+ * change token nor the folder exclusions changed) and debounced rescans whenever MediaStore reports a
+ * change. Tracks in excluded folders are never indexed.
  */
 class LibrarySync(
     private val database: BareDatabase,
     private val scanner: MediaScanner,
     private val tokenStore: ScanTokenStore,
     private val scope: CoroutineScope,
+    private val excludedFolders: suspend () -> Set<String> = { emptySet() },
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
     private val _state = MutableStateFlow<ScanState>(ScanState.Idle)
@@ -47,13 +50,14 @@ class LibrarySync(
 
     suspend fun sync(force: Boolean) = mutex.withLock {
         val dao = database.trackDao()
-        val token = scanner.changeToken()
+        val excluded = excludedFolders()
+        val token = scanner.changeToken()?.let { "$it|${FolderFilter.fingerprint(excluded)}" }
         if (!force && token != null && token == tokenStore.read() && dao.count() > 0) return@withLock
 
         _state.value = ScanState.Scanning
         val start = clock()
         try {
-            val scanned = scanner.scan()
+            val scanned = FolderFilter.apply(scanner.scan(), excluded)
             val cached = dao.fingerprints().associate { it.id to it.fingerprint }
             val diff = LibraryDiff.compute(scanned, cached)
             if (!diff.isEmpty) {

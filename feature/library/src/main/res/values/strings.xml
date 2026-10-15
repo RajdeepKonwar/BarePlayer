@@ -15,4 +15,9 @@
     <string name="section_artists">Artists</string>
     <string name="section_albums">Albums</string>
     <string name="section_songs">Songs</string>
+    <string name="exclude_folder">Exclude folder</string>
+    <string name="exclude_folder_title">Exclude this folder?</string>
+    <string name="exclude_folder_body">Songs in %1$s and its subfolders will be hidden from your library. Files are not deleted, and you can include the folder again in Settings.</string>
+    <string name="exclude">Exclude</string>
+    <string name="cancel">Cancel</string>
 </resources>

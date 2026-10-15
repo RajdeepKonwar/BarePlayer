@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.rajdeepkonwar.bareplayer.core.data.scan.ScanTokenStore
 import com.rajdeepkonwar.bareplayer.core.domain.repository.PreferencesRepository
@@ -27,9 +28,19 @@ class DataStorePreferences(context: Context) : PreferencesRepository, ScanTokenS
                 themeMode = prefs[THEME_MODE]?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } }
                     ?: ThemeMode.SYSTEM,
                 dynamicColor = prefs[DYNAMIC_COLOR] ?: true,
+                excludedFolders = prefs[EXCLUDED_FOLDERS].orEmpty(),
             )
         }
         .distinctUntilChanged()
+
+    suspend fun excludedFolders(): Set<String> = store.data.first()[EXCLUDED_FOLDERS].orEmpty()
+
+    override suspend fun setFolderExcluded(path: String, excluded: Boolean) {
+        store.edit { prefs ->
+            val current = prefs[EXCLUDED_FOLDERS].orEmpty()
+            prefs[EXCLUDED_FOLDERS] = if (excluded) current + path else current - path
+        }
+    }
 
     override suspend fun setThemeMode(mode: ThemeMode) {
         store.edit { it[THEME_MODE] = mode.name }
@@ -49,5 +60,6 @@ class DataStorePreferences(context: Context) : PreferencesRepository, ScanTokenS
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
         val SCAN_TOKEN = stringPreferencesKey("media_store_token")
+        val EXCLUDED_FOLDERS = stringSetPreferencesKey("excluded_folders")
     }
 }

@@ -23,14 +23,23 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -262,6 +271,7 @@ internal fun GenresTab(viewModel: LibraryViewModel, onClick: (Genre) -> Unit) {
 internal fun FoldersTab(viewModel: LibraryViewModel, onClick: (Folder) -> Unit) {
     val folders by viewModel.folders.collectAsStateWithLifecycle()
     val scanState by viewModel.scanState.collectAsStateWithLifecycle()
+    var confirmExclude by rememberSaveable { mutableStateOf<String?>(null) }
     TabContent(folders, scanState, BareIcons.Folder) { list ->
         LazyColumn(contentPadding = ListBottomPadding, modifier = Modifier.fillMaxSize()) {
             items(list, key = { it.path }, contentType = { "folder" }) { folder ->
@@ -271,8 +281,44 @@ internal fun FoldersTab(viewModel: LibraryViewModel, onClick: (Folder) -> Unit) 
                         " · " + folder.path,
                     onClick = { onClick(folder) },
                     leading = { IconBadge(BareIcons.Folder) },
+                    trailing = { FolderMenu(onExclude = { confirmExclude = folder.path }) },
                 )
             }
+        }
+    }
+    confirmExclude?.let { path ->
+        AlertDialog(
+            onDismissRequest = { confirmExclude = null },
+            title = { Text(stringResource(R.string.exclude_folder_title)) },
+            text = { Text(stringResource(R.string.exclude_folder_body, path)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmExclude = null
+                    viewModel.excludeFolder(path)
+                }) { Text(stringResource(R.string.exclude)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmExclude = null }) { Text(stringResource(R.string.cancel)) }
+            },
+        )
+    }
+}
+
+@Composable
+private fun FolderMenu(onExclude: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { expanded = true }) {
+            Icon(painterResource(BareIcons.More), contentDescription = stringResource(UiR.string.more_options))
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.exclude_folder)) },
+                onClick = {
+                    expanded = false
+                    onExclude()
+                },
+            )
         }
     }
 }
@@ -293,6 +339,7 @@ internal fun SimpleRow(
     subtitle: String,
     onClick: () -> Unit,
     leading: @Composable () -> Unit,
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -300,7 +347,7 @@ internal fun SimpleRow(
             .fillMaxWidth()
             .height(72.dp)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp),
+            .padding(start = 16.dp, end = if (trailing != null) 4.dp else 16.dp),
     ) {
         leading()
         Spacer(Modifier.width(16.dp))
@@ -314,5 +361,6 @@ internal fun SimpleRow(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+        trailing?.invoke()
     }
 }

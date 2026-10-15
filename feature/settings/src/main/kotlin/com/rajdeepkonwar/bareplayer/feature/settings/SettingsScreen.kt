@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rajdeepkonwar.bareplayer.core.domain.library.SetFolderExcludedUseCase
 import com.rajdeepkonwar.bareplayer.core.model.ScanState
 import com.rajdeepkonwar.bareplayer.core.model.ThemeMode
 import com.rajdeepkonwar.bareplayer.core.model.UserPreferences
@@ -46,6 +48,9 @@ internal fun SettingsScreen(appVersion: String) {
     val prefs by deps.preferencesRepository.preferences.collectAsStateWithLifecycle(initialValue = UserPreferences())
     val scanState by deps.libraryRepository.scanState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val setFolderExcluded = remember(deps) {
+        SetFolderExcludedUseCase(deps.preferencesRepository, deps.libraryRepository)
+    }
 
     Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.settings_title)) }) }) { padding ->
         Column(
@@ -126,6 +131,10 @@ internal fun SettingsScreen(appVersion: String) {
                     modifier = Modifier.padding(vertical = 8.dp),
                 ) { Text(stringResource(R.string.rescan_library)) }
             }
+            ExcludedFoldersSection(
+                excluded = prefs.excludedFolders,
+                onSetExcluded = { path, excluded -> scope.launch { setFolderExcluded(path, excluded) } },
+            )
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader(stringResource(R.string.section_about))
