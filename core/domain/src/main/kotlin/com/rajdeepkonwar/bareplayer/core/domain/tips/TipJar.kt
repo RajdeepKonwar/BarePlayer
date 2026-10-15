@@ -14,6 +14,8 @@ data class TipJarState(
     val status: Status = Status.Loading,
     val products: List<TipProduct> = emptyList(),
     val isSupporter: Boolean = false,
+    /** Debug builds show sample tips that never charge anything. */
+    val isPreview: Boolean = false,
 ) {
     enum class Status {
         Loading,

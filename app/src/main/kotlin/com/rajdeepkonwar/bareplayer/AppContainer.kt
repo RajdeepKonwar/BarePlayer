@@ -3,6 +3,7 @@ package com.rajdeepkonwar.bareplayer
 import android.app.Application
 import com.rajdeepkonwar.bareplayer.core.billing.ForegroundActivityTracker
 import com.rajdeepkonwar.bareplayer.core.billing.PlayTipJar
+import com.rajdeepkonwar.bareplayer.core.billing.PreviewTipJar
 import com.rajdeepkonwar.bareplayer.core.data.db.BareDatabase
 import com.rajdeepkonwar.bareplayer.core.data.repository.DataStorePreferences
 import com.rajdeepkonwar.bareplayer.core.data.repository.DefaultLibraryRepository
@@ -54,5 +55,8 @@ class AppContainer(private val application: Application) : AppDependencies, Play
     override val playbackController get() = playerConnection
 
     val activityTracker = ForegroundActivityTracker()
-    override val tipJar: TipJar by lazy { PlayTipJar(application, activityTracker) }
+    override val tipJar: TipJar by lazy {
+        // Billing only works for Play installs; debug builds preview the UI without charging.
+        if (BuildConfig.DEBUG) PreviewTipJar() else PlayTipJar(application, activityTracker)
+    }
 }

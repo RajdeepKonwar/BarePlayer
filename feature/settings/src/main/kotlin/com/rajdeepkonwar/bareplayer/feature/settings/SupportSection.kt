@@ -64,7 +64,7 @@ internal fun SupportSection(tipJar: TipJar, snackbarHostState: SnackbarHostState
                 }
             }
             Text(
-                text = stringResource(R.string.support_footnote),
+                text = stringResource(if (state.isPreview) R.string.support_preview_footnote else R.string.support_footnote),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = 8.dp),

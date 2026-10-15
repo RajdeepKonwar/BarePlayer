@@ -27,6 +27,7 @@
     <string name="support_body">BarePlayer is free, with no ads or tracking. If you enjoy it, you can leave a tip to support its development.</string>
     <string name="supporter_thanks">Thank you for supporting BarePlayer! Your tip helps keep it free and ad-free.</string>
     <string name="support_footnote">Tips are one-time payments through Google Play and don\'t unlock anything.</string>
+    <string name="support_preview_footnote">Debug preview: sample prices, and no payment is made. Release builds use Google Play.</string>
     <string name="tip_button">%1$s · %2$s</string>
     <string name="tip_thanks">Thank you for the tip!</string>
     <string name="tip_pending">Your tip is pending. It will complete once the payment goes through.</string>
