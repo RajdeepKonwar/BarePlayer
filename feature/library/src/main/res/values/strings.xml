@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="library_title">Library</string>
+    <string name="tab_songs">Songs</string>
+    <string name="tab_albums">Albums</string>
+    <string name="tab_artists">Artists</string>
+    <string name="tab_genres">Genres</string>
+    <string name="tab_folders">Folders</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Songs, albums, artists</string>
+    <string name="clear_search">Clear search</string>
+    <string name="no_music">No music found on this device yet. Pull down on Songs to rescan.</string>
+    <string name="no_results">No results</string>
+    <string name="shuffle_all">Shuffle all</string>
+    <string name="section_artists">Artists</string>
+    <string name="section_albums">Albums</string>
+    <string name="section_songs">Songs</string>
+</resources>

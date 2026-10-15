@@ -2,6 +2,8 @@ package com.rajdeepkonwar.bareplayer.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -10,6 +12,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -22,7 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.rajdeepkonwar.bareplayer.R
 import com.rajdeepkonwar.bareplayer.core.ui.icons.BareIcons
 import com.rajdeepkonwar.bareplayer.feature.library.LibraryRoute
-import com.rajdeepkonwar.bareplayer.feature.library.libraryScreen
+import com.rajdeepkonwar.bareplayer.feature.library.libraryGraph
 import com.rajdeepkonwar.bareplayer.feature.playlists.PlaylistsRoute
 import com.rajdeepkonwar.bareplayer.feature.playlists.playlistsScreen
 import com.rajdeepkonwar.bareplayer.feature.settings.SettingsRoute
@@ -45,8 +50,10 @@ fun BareApp() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
+    var pendingAddToPlaylist by rememberSaveable { mutableStateOf<List<Long>?>(null) }
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             NavigationBar {
                 TopLevelDestination.entries.forEach { item ->
@@ -70,9 +77,9 @@ fun BareApp() {
         NavHost(
             navController = navController,
             startDestination = LibraryRoute,
-            modifier = Modifier.padding(padding),
+            modifier = Modifier.padding(padding).consumeWindowInsets(padding),
         ) {
-            libraryScreen()
+            libraryGraph(navController, onAddToPlaylist = { pendingAddToPlaylist = it })
             playlistsScreen()
             settingsScreen()
         }

@@ -1,19 +1,51 @@
 package com.rajdeepkonwar.bareplayer.feature.library
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.rajdeepkonwar.bareplayer.feature.library.collection.CollectionScreen
+import com.rajdeepkonwar.bareplayer.feature.library.search.SearchScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object LibraryRoute
 
-fun NavGraphBuilder.libraryScreen() {
+@Serializable
+data object SearchRoute
+
+enum class CollectionType { ALBUM, ARTIST, GENRE, FOLDER }
+
+/** A list of tracks grouped by album, artist, genre ([key] = name) or folder ([key] = path). */
+@Serializable
+data class CollectionRoute(val type: CollectionType, val id: Long = 0L, val key: String = "")
+
+fun NavController.navigateToCollection(route: CollectionRoute) = navigate(route) { launchSingleTop = true }
+
+fun NavGraphBuilder.libraryGraph(
+    navController: NavController,
+    onAddToPlaylist: (List<Long>) -> Unit,
+) {
     composable<LibraryRoute> {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Library") }
+        LibraryScreen(
+            onOpenCollection = navController::navigateToCollection,
+            onSearch = { navController.navigate(SearchRoute) { launchSingleTop = true } },
+            onAddToPlaylist = onAddToPlaylist,
+        )
+    }
+    composable<SearchRoute> {
+        SearchScreen(
+            onBack = navController::popBackStack,
+            onOpenCollection = navController::navigateToCollection,
+            onAddToPlaylist = onAddToPlaylist,
+        )
+    }
+    composable<CollectionRoute> { entry ->
+        CollectionScreen(
+            route = entry.toRoute(),
+            onBack = navController::popBackStack,
+            onOpenCollection = navController::navigateToCollection,
+            onAddToPlaylist = onAddToPlaylist,
+        )
     }
 }
