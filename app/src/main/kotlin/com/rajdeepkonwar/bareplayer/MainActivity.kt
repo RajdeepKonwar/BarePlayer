@@ -57,6 +57,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        container.playerConnection.connect()
+    }
+
+    override fun onStop() {
+        // Unbinding lets the service stop itself once playback is paused and the UI is gone.
+        container.playerConnection.release()
+        super.onStop()
+    }
+
     private companion object {
         val LIGHT_SCRIM = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
         val DARK_SCRIM = Color.argb(0x80, 0x1b, 0x1b, 0x1b)

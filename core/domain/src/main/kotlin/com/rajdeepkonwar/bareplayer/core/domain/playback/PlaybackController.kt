@@ -15,6 +15,9 @@ interface PlaybackController {
     /** Playback position in ms, emitted periodically while collected. */
     val position: Flow<Long>
 
+    /** One-off, user-facing playback problems (e.g. a track whose format the device can't decode). */
+    val errors: Flow<PlaybackError>
+
     fun playTracks(tracks: List<Track>, startIndex: Int = 0, shuffle: Boolean = false)
     fun playNext(tracks: List<Track>)
     fun addToQueue(tracks: List<Track>)

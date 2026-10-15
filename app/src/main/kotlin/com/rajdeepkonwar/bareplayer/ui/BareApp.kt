@@ -2,17 +2,22 @@ package com.rajdeepkonwar.bareplayer.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -28,6 +33,11 @@ import com.rajdeepkonwar.bareplayer.R
 import com.rajdeepkonwar.bareplayer.core.ui.icons.BareIcons
 import com.rajdeepkonwar.bareplayer.feature.library.LibraryRoute
 import com.rajdeepkonwar.bareplayer.feature.library.libraryGraph
+import com.rajdeepkonwar.bareplayer.feature.player.MiniPlayer
+import com.rajdeepkonwar.bareplayer.feature.player.PlaybackErrorsEffect
+import com.rajdeepkonwar.bareplayer.feature.player.isPlayerDestination
+import com.rajdeepkonwar.bareplayer.feature.player.navigateToNowPlaying
+import com.rajdeepkonwar.bareplayer.feature.player.playerGraph
 import com.rajdeepkonwar.bareplayer.feature.playlists.PlaylistsRoute
 import com.rajdeepkonwar.bareplayer.feature.playlists.playlistsScreen
 import com.rajdeepkonwar.bareplayer.feature.settings.SettingsRoute
@@ -50,26 +60,37 @@ fun BareApp() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
+    val fullScreenPlayer = destination?.isPlayerDestination() == true
+    val snackbarHostState = remember { SnackbarHostState() }
     var pendingAddToPlaylist by rememberSaveable { mutableStateOf<List<Long>?>(null) }
+    val onAddToPlaylist: (List<Long>) -> Unit = { pendingAddToPlaylist = it }
+
+    PlaybackErrorsEffect(snackbarHostState)
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { SnackbarHost(snackbarHostState, Modifier.navigationBarsPadding()) },
         bottomBar = {
-            NavigationBar {
-                TopLevelDestination.entries.forEach { item ->
-                    val selected = destination?.hierarchy?.any { it.hasRoute(item.routeClass) } == true
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(painterResource(item.icon), contentDescription = null) },
-                        label = { Text(stringResource(item.label)) },
-                    )
+            if (!fullScreenPlayer) {
+                Column {
+                    MiniPlayer(onOpen = navController::navigateToNowPlaying)
+                    NavigationBar {
+                        TopLevelDestination.entries.forEach { item ->
+                            val selected = destination?.hierarchy?.any { it.hasRoute(item.routeClass) } == true
+                            NavigationBarItem(
+                                selected = selected,
+                                onClick = {
+                                    navController.navigate(item.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                icon = { Icon(painterResource(item.icon), contentDescription = null) },
+                                label = { Text(stringResource(item.label)) },
+                            )
+                        }
+                    }
                 }
             }
         },
@@ -79,7 +100,8 @@ fun BareApp() {
             startDestination = LibraryRoute,
             modifier = Modifier.padding(padding).consumeWindowInsets(padding),
         ) {
-            libraryGraph(navController, onAddToPlaylist = { pendingAddToPlaylist = it })
+            libraryGraph(navController, onAddToPlaylist)
+            playerGraph(navController, onAddToPlaylist)
             playlistsScreen()
             settingsScreen()
         }

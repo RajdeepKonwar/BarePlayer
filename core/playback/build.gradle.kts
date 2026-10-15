@@ -13,4 +13,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.session)
+
+    testImplementation(libs.robolectric)
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="now_playing">Now playing</string>
+    <string name="collapse">Collapse player</string>
+    <string name="nothing_playing">Nothing is playing. Pick a song from your library.</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="next">Next track</string>
+    <string name="previous">Previous track</string>
+    <string name="shuffle_on">Shuffle is on</string>
+    <string name="shuffle_off">Shuffle is off</string>
+    <string name="repeat_off">Repeat is off</string>
+    <string name="repeat_all">Repeating all</string>
+    <string name="repeat_one">Repeating one</string>
+    <string name="this_track">This track</string>
+    <string name="error_unsupported_format">Skipped “%1$s”: this audio format isn\'t supported on this device.</string>
+    <string name="error_cannot_play">Couldn\'t play “%1$s”. The file may have been moved or deleted.</string>
+</resources>

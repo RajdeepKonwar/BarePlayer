@@ -24,7 +24,6 @@ data class PlaybackState(
     val queue: List<QueueItem> = emptyList(),
     /** Index of [current] within [queue]. */
     val currentQueuePosition: Int = -1,
-    val errorMessage: String? = null,
 ) {
     val hasMedia: Boolean get() = current != null
 }
