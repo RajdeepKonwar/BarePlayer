@@ -1,14 +1,14 @@
 # BarePlayer
 
-An offline, ad-free local music player for Android. No internet permission, no ads, no analytics,
-no tracking. Kotlin, Jetpack Compose (Material 3), AndroidX Media3, Room.
+An offline, ad-free local music player for Android, by Shearless Software. No internet permission,
+no ads, no analytics, no tracking. Kotlin, Jetpack Compose (Material 3), AndroidX Media3, Room.
 
 - Library: Songs, Albums, Artists, Genres and Folders views, fast full-text search
 - Now Playing, mini-player, shuffle and repeat, queue with drag-to-reorder and swipe-to-remove
 - Background playback with media notification, lock screen, Bluetooth/headset controls,
-  audio focus handling and pause on headphone unplug
+  audio focus handling, volume leveling and pause on headphone unplug
 - Playlists: create, rename, delete, add/remove/reorder tracks
-- The queue and position are restored after restart, including from system media controls
+- The queue and position are restored after restart when BarePlayer is opened
 - Light, dark and system themes, with dynamic color on Android 12+
 
 minSdk 26 (Android 8.0), targetSdk/compileSdk 37.
@@ -129,18 +129,22 @@ Multiplatform `commonMain` for an iOS version. Room, DataStore and Coil 3 alread
 flowchart LR
     UI["Compose UI"] -->|PlaybackController| conn["PlayerConnection (MediaController)"]
     conn -->|"binder IPC"| svc["PlaybackService (MediaLibrarySession + ExoPlayer)"]
-    svc --> sys["Notification, lock screen, Bluetooth, system resume"]
+    svc --> sys["Notification, lock screen, Bluetooth"]
     svc -->|"debounced saves"| room[("Room: queue_state")]
 ```
 
 - ExoPlayer handles audio focus (pausing for calls), becoming-noisy (headphone unplug) and a
-  local wake lock. Media3 manages the `mediaPlayback` foreground service and the notification.
+  local wake lock. A session-scoped loudness enhancer reduces volume jumps between quieter and
+  louder recordings. Media3 manages the `mediaPlayback` foreground service and the notification.
+- Bluetooth disconnect pauses playback. For five seconds after a Bluetooth audio device connects,
+  automatic external PLAY commands are ignored; manual media controls work normally afterward.
 - Shuffle uses ExoPlayer's shuffle order. Enabling shuffle keeps the current song playing first;
   "Play next" in shuffle mode really plays next, through a custom `SET_SHUFFLE_ORDER` session
   command that only BarePlayer's own controller may send.
 - The queue (track ids, index, position, shuffle order, repeat mode) is saved on every change
   (debounced), every 10 s while playing, and when the service stops. It is restored paused when
-  the service starts, and through `onPlaybackResumption` for system media controls and Bluetooth.
+  BarePlayer's UI connects; explicit system or Bluetooth play can also restore it after the
+  connection guard expires.
 - Tracks the device can't decode (for example FLAC on Android 8.0, which has no platform FLAC
   decoder) are skipped with a message instead of playing silence.
 
@@ -158,7 +162,7 @@ album and requested at thumbnail size.
 | --- | --- |
 | Compose BOM, Material 3, activity/lifecycle/navigation-compose | UI toolkit and type-safe navigation |
 | core-splashscreen | Consistent splash on API 26-31; held until the theme preference loads |
-| media3-exoplayer, media3-session | Playback, notification, lock screen, Bluetooth, resumption |
+| media3-exoplayer, media3-session | Playback, notification, lock screen and Bluetooth controls |
 | kotlinx-coroutines-guava | Bridges Media3's `ListenableFuture` APIs to coroutines |
 | Room + KSP | Library index, FTS search, playlists, queue, play counts |
 | DataStore | Theme and scan-token preferences |
@@ -184,7 +188,7 @@ material-icons-extended (icons are bundled vectors), any network, analytics, or 
 ## Play Store compliance checklist
 
 - [x] No `INTERNET` or network-state permission in any variant (enforced by `verifyNoInternetPermission`)
-- [x] `READ_MEDIA_AUDIO` on 33+, `READ_EXTERNAL_STORAGE` capped with `maxSdkVersion="32"`; no `MANAGE_EXTERNAL_STORAGE`, no photo/video permissions
+- [x] `READ_MEDIA_AUDIO` on 33+, `READ_EXTERNAL_STORAGE` capped with `maxSdkVersion="32"`, `WRITE_EXTERNAL_STORAGE` capped with `maxSdkVersion="28"` for deleting songs; no `MANAGE_EXTERNAL_STORAGE`, no photo/video permissions
 - [x] Foreground service typed `mediaPlayback` with `FOREGROUND_SERVICE_MEDIA_PLAYBACK`
 - [x] `POST_NOTIFICATIONS` requested once, optional (media notifications are exempt)
 - [x] targetSdk 37, edge-to-edge, predictive back (`enableOnBackInvokedCallback`)
@@ -193,7 +197,7 @@ material-icons-extended (icons are bundled vectors), any network, analytics, or 
 - [ ] Play Console: declare the `mediaPlayback` foreground service use (video of background playback)
 - [ ] Play Console Data safety: "No data collected", "No data shared" (check Google's current guidance for apps using Play Billing)
 - [ ] Payments profile set up, and the tip in-app products created (`tip_coffee`, `tip_lunch`, `tip_feature` and `tip_custom_*`; see `store/listing.md`). Tips only appear in builds installed from Play, including internal testing
-- [ ] Privacy policy URL: host `docs/privacy-policy.html` (e.g. GitHub Pages from the `docs/` folder) after replacing `CONTACT_EMAIL`
+- [ ] Privacy policy URL: host `docs/privacy-policy.html` (e.g. GitHub Pages from the `docs/` folder)
 - [ ] Store listing: text in `store/listing.md`, screenshots in `store/screenshots/`, feature graphic `store/feature_graphic_1024x500.png`, icon `design/icon/play_store_icon_512.png`
 - [ ] Upload key and Play App Signing; `keystore.properties` for local release builds
 - [ ] Generate and commit the Baseline Profile; upload an AAB (`./gradlew bundleRelease`)
@@ -204,12 +208,13 @@ material-icons-extended (icons are bundled vectors), any network, analytics, or 
 2. Songs list with a large library: fling hard and drag the fast-scroll thumb. Watch for jank.
 3. Albums, Artists, Genres, Folders: open details, play, shuffle; art loads (embedded and `cover.jpg`).
 4. Search for an accent-insensitive prefix, e.g. "beyo" finds "Beyoncé".
-5. Play an album, lock the screen, use the lock-screen and notification controls.
+5. Play songs mastered at noticeably different levels, then lock the screen and use the
+   lock-screen and notification controls.
 6. Bluetooth headset or wired headphones: play/pause/next buttons; unplug pauses playback.
 7. Phone call or another media app: BarePlayer pauses and resumes appropriately.
 8. Queue: drag to reorder, swipe to remove, tap to jump; with shuffle on, "Play next" plays next.
 9. Swipe the app away while paused, relaunch: the queue and position are restored.
-10. Reboot, then press play on a Bluetooth device or use the system media resume control.
+10. Reboot or leave the app stopped, then connect to a car: BarePlayer must not begin playing on its own.
 11. Playlists: create, add from any list and from Now Playing, reorder, remove, rename, delete.
 12. Settings: switch Light/Dark/System and dynamic color; rescan the library.
 13. Android 8.0 device or emulator with a FLAC file: the track is skipped with a message.

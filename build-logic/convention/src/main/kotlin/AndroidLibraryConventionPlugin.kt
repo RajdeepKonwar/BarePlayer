@@ -1,10 +1,10 @@
 import com.android.build.api.dsl.LibraryExtension
-import com.rajdeepkonwar.bareplayer.buildlogic.configureKotlinJvmTarget
-import com.rajdeepkonwar.bareplayer.buildlogic.configureLint
-import com.rajdeepkonwar.bareplayer.buildlogic.configureTestJvm
-import com.rajdeepkonwar.bareplayer.buildlogic.int
-import com.rajdeepkonwar.bareplayer.buildlogic.lib
-import com.rajdeepkonwar.bareplayer.buildlogic.libs
+import com.shearless.bareplayer.buildlogic.configureKotlinJvmTarget
+import com.shearless.bareplayer.buildlogic.configureLint
+import com.shearless.bareplayer.buildlogic.configureTestJvm
+import com.shearless.bareplayer.buildlogic.int
+import com.shearless.bareplayer.buildlogic.lib
+import com.shearless.bareplayer.buildlogic.libs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project

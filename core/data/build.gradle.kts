@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.rajdeepkonwar.bareplayer.core.data"
+    namespace = "com.shearless.bareplayer.core.data"
 }
 
 room {

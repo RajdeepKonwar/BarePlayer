@@ -1,5 +1,5 @@
-import com.rajdeepkonwar.bareplayer.buildlogic.lib
-import com.rajdeepkonwar.bareplayer.buildlogic.libs
+import com.shearless.bareplayer.buildlogic.lib
+import com.shearless.bareplayer.buildlogic.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies

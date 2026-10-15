@@ -12,7 +12,7 @@ Offline music player. No ads, no tracking, no internet. Just your music.
 
 ## Full description (max 4000)
 
-BarePlayer is a fast, clean music player for the songs already on your phone. It has no ads, no accounts, no analytics and no internet access at all. Your music and your listening habits stay on your device.
+BarePlayer, from Shearless Software, is a fast, clean music player for the songs already on your phone. It has no ads, no accounts, no analytics and no internet access at all. Your music and your listening habits stay on your device.
 
 YOUR LIBRARY, ORGANIZED
 • Browse by songs, albums, artists, genres and folders
@@ -53,9 +53,14 @@ Music & Audio
 
 Music player, Offline, Audio player
 
+## Developer name
+
+Shearless Software
+
 ## Contact details
 
-- Email: CONTACT_EMAIL (required; shown publicly)
+- Developer: Shearless Software
+- Email: bearsnroses13@gmail.com (required; shown publicly)
 - Website: optional
 - Privacy policy: the URL where `docs/privacy-policy.html` is hosted (see README)
 
@@ -73,15 +78,15 @@ Create these one-time products. IDs must match exactly and can never be reused o
 USD price; Play converts it for other countries, and you can adjust any country by hand. The app shows
 its own button labels and takes only the price from Play.
 
-Main buttons ("Buy me lunch" is highlighted):
+Main buttons ("Medium Tip" is highlighted):
 
 | Product ID | Name | Description | Price |
 | --- | --- | --- | --- |
-| `tip_coffee` | Buy me a coffee | A small thank-you. Unlocks nothing. | $1.99 |
-| `tip_lunch` | Buy me lunch | A generous thank-you. Unlocks nothing. | $4.99 |
-| `tip_feature` | Fund a new feature | A big thank-you. Unlocks nothing. | $9.99 |
+| `tip_coffee` | Small Tip | A small thank-you. Unlocks nothing. | $1.99 |
+| `tip_lunch` | Medium Tip | A generous thank-you. Unlocks nothing. | $4.99 |
+| `tip_feature` | Big Tip | A big thank-you. Unlocks nothing. | $9.99 |
 
-"Choose your amount" presets (name them e.g. "$5 tip", description "A thank-you of your choosing. Unlocks nothing."):
+Custom tip input amounts (name the products e.g. "$5 tip", description "A thank-you of your choosing. Unlocks nothing."):
 
 | Product ID | Price |
 | --- | --- |

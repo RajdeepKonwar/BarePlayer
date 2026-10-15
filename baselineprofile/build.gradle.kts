@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.rajdeepkonwar.bareplayer.baselineprofile"
+    namespace = "com.shearless.bareplayer.baselineprofile"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

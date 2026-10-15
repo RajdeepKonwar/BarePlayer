@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace = "com.rajdeepkonwar.bareplayer.feature.library"
+    namespace = "com.shearless.bareplayer.feature.library"
 }

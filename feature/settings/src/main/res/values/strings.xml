@@ -29,17 +29,19 @@
     <string name="support_footnote">Tips are one-time payments through Google Play and don\'t unlock anything.</string>
     <string name="support_preview_footnote">Debug preview: sample prices, and no payment is made. Release builds use Google Play.</string>
     <string name="tip_button">%1$s · %2$s</string>
-    <string name="tip_coffee">Buy me a coffee</string>
-    <string name="tip_lunch">Buy me lunch</string>
-    <string name="tip_feature">Fund a new feature</string>
-    <string name="tip_choose_amount">Choose your amount…</string>
-    <string name="tip_choose_amount_title">Choose your tip</string>
-    <string name="tip_amount_confirm">Tip %1$s</string>
+    <string name="tip_coffee">Small Tip</string>
+    <string name="tip_lunch">Medium Tip</string>
+    <string name="tip_feature">Big Tip</string>
+    <string name="tip_custom_amount">Custom tip amount</string>
+    <string name="tip_custom_amount_hint">Enter amount in dollars</string>
+    <string name="tip_custom_amount_supported">Available amounts: $1, $2, $3, $5, $10, $15, $20, $25, $50, or $100</string>
+    <string name="tip_custom_amount_invalid">Enter one of the available positive amounts.</string>
+    <string name="tip_custom_amount_confirm">Tip %1$s</string>
     <string name="tip_thanks">Thank you for the tip!</string>
     <string name="tip_pending">Your tip is pending. It will complete once the payment goes through.</string>
     <string name="tip_failed">The tip couldn\'t be completed. You haven\'t been charged.</string>
     <string name="section_about">About</string>
     <string name="privacy_statement">BarePlayer works entirely offline. It has no internet permission, no ads, no analytics and no tracking. Your music and listening history never leave this device.</string>
     <string name="version">Version %1$s</string>
-    <string name="developer_credit">Created and developed by Rajdeep Konwar</string>
+    <string name="developer_credit">Developed by Shearless Software</string>
 </resources>

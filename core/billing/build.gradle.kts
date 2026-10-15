@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.rajdeepkonwar.bareplayer.core.billing"
+    namespace = "com.shearless.bareplayer.core.billing"
 }
 
 dependencies {

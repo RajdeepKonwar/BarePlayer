@@ -1,0 +1,50 @@
+# Build: Offline, ad-free local music player for Android
+
+## Goal
+Build a polished, high-performance Android music player that plays audio files stored on the device. It must work fully offline and contain no ads, analytics, or tracking. Being ad-free and private is the app's main selling point. I plan to publish it on the Google Play Store if it turns out polished enough, so treat it as production-quality code, not a prototype. An iOS version may come later, so keep the architecture friendly to that.
+
+## Hard constraints
+- **Fully offline:** do not request the INTERNET permission at all. No network calls, no remote config, no crash reporting SDKs that phone home.
+- **Zero ads, analytics, or tracking:** no Firebase, no ad SDKs, no third-party telemetry. Keep dependencies minimal, and justify each one you add.
+- **Performance is a top priority:** fast cold start, smooth 60/120fps scrolling with libraries of 10k+ tracks, low memory use, and gapless playback where possible.
+- **Play Store compliant:** target the latest stable SDK, use scoped storage and the correct media permissions (READ_MEDIA_AUDIO on Android 13+, with a fallback for older versions), handle the foreground service type `mediaPlayback`, and follow current Play policies.
+
+## Tech stack (use this unless you have a strong reason not to; if so, explain before deviating)
+- Kotlin, Jetpack Compose, Material 3 (with dynamic color)
+- AndroidX Media3 (ExoPlayer + MediaSessionService) for playback, notification, lock screen, Bluetooth and headset controls, and Android Auto readiness
+- MediaStore for library scanning; Room for caching the library index, playlists, and play counts
+- Coroutines/Flow, MVVM or MVI, Hilt (or manual DI if lighter)
+- Gradle Kotlin DSL with version catalogs
+- Structure the code so domain and data logic are separate from Android UI, so we can move to Kotlin Multiplatform / Compose Multiplatform for iOS later.
+
+## Supported formats
+MP3, FLAC, AAC/M4A, OGG/Opus, WAV, and anything else Media3 handles natively. Read embedded metadata and album art. Fall back to folder art (cover.jpg/folder.jpg) when no embedded art exists.
+
+## MVP features (phase 1)
+1. Library scan with Songs, Albums, Artists, Folders, and Genres views, plus fast search
+2. Now Playing screen: album art, seek bar, play/pause/next/previous, shuffle, repeat modes
+3. Persistent mini-player plus a playback queue (view, reorder, remove)
+4. Background playback with media notification, lock screen controls, and audio focus handling (pause on calls and headphone unplug)
+5. Playlists: create, rename, delete, add/remove tracks
+6. Resume the last queue and position after app restart
+7. Light, dark, and system themes
+
+## Phase 2 (after the MVP is solid)
+Gapless and crossfade playback, equalizer (system EQ/audio effects), sleep timer, lyrics (embedded or .lrc files), folder include/exclude lists, sorting options, playback speed, ReplayGain, home screen widget, M3U playlist import/export.
+
+## How I want you to work
+1. **Plan first:** propose the project structure, module layout, key dependencies, and a milestone breakdown. Wait for my confirmation before writing large amounts of code.
+2. Build incrementally, one milestone at a time. After each one, make sure the project **compiles** (`./gradlew assembleDebug`) and passing lint and tests before moving on.
+3. Write unit tests for non-UI logic (queue management, library parsing, playlist operations).
+4. Keep a short `README.md` covering how to build and run, plus the architecture overview.
+5. Flag any Play Store requirement, permission, or policy issue as soon as you hit it.
+6. Ask me before making major product decisions (app name, branding, minimum SDK version below 26).
+
+## Definition of done for the MVP
+- Installs and runs on Android 8.0+ (minSdk 26) through the latest Android version
+- Scans and plays a real local library, including FLAC and MP3, with no network permission in the merged manifest
+- Background playback and media controls work reliably
+- No jank when scrolling a large library; cold start feels instant
+- Clean build with no lint errors and passing tests
+
+App name placeholder: **BarePlayer**, with package name `com.shearless.BarePlayer`

@@ -14,11 +14,11 @@ val keystoreProperties = rootProject.file("keystore.properties").takeIf { it.exi
 }
 
 android {
-    namespace = "com.rajdeepkonwar.bareplayer"
+    namespace = "com.shearless.bareplayer"
 
     defaultConfig {
-        applicationId = "com.rajdeepkonwar.bareplayer"
-        versionCode = 2
+        applicationId = "com.shearless.bareplayer"
+        versionCode = 1
         versionName = "1.0.0"
     }
 

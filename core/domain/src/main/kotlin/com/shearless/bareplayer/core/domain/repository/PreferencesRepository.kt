@@ -1,0 +1,12 @@
+package com.shearless.bareplayer.core.domain.repository
+
+import com.shearless.bareplayer.core.model.ThemeMode
+import com.shearless.bareplayer.core.model.UserPreferences
+import kotlinx.coroutines.flow.Flow
+
+interface PreferencesRepository {
+    val preferences: Flow<UserPreferences>
+    suspend fun setThemeMode(mode: ThemeMode)
+    suspend fun setDynamicColor(enabled: Boolean)
+    suspend fun setFolderExcluded(path: String, excluded: Boolean)
+}

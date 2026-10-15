@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.rajdeepkonwar.bareplayer.core.playback"
+    namespace = "com.shearless.bareplayer.core.playback"
 }
 
 dependencies {

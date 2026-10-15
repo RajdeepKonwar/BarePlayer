@@ -4,7 +4,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.rajdeepkonwar.bareplayer.buildlogic"
+group = "com.shearless.bareplayer.buildlogic"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17

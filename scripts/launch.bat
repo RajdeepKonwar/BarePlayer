@@ -10,7 +10,7 @@ echo Usage: %~nx0 Debug^|Release
 exit /b 1
 :variant_ok
 
-set "PACKAGE=com.rajdeepkonwar.bareplayer"
+set "PACKAGE=com.shearless.bareplayer"
 set "AVD=BarePlayer_API37"
 cd /d "%~dp0.."
 
