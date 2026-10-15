@@ -18,7 +18,6 @@ import com.rajdeepkonwar.bareplayer.core.domain.playback.PlaybackError
 import com.rajdeepkonwar.bareplayer.core.domain.playback.QueueMath
 import com.rajdeepkonwar.bareplayer.core.model.PlaybackState
 import com.rajdeepkonwar.bareplayer.core.model.QueueItem
-import com.rajdeepkonwar.bareplayer.core.model.RepeatMode
 import com.rajdeepkonwar.bareplayer.core.model.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -185,19 +184,7 @@ class PlayerConnection(context: Context) : PlaybackController {
         c.sendCustomCommand(command, Bundle(1).apply { putIntArray(PlaybackCommands.KEY_ORDER, order.toIntArray()) })
     }
 
-    private fun computePlayOrder(c: Player): List<Int> {
-        val count = c.mediaItemCount
-        if (!c.shuffleModeEnabled) return List(count) { it }
-        val timeline = c.currentTimeline
-        if (timeline.isEmpty) return emptyList()
-        val order = ArrayList<Int>(count)
-        var index = timeline.getFirstWindowIndex(true)
-        while (index != C.INDEX_UNSET && order.size < count) {
-            order += index
-            index = timeline.getNextWindowIndex(index, Player.REPEAT_MODE_OFF, true)
-        }
-        return if (order.size == count) order else List(count) { it }
-    }
+    private fun computePlayOrder(c: Player): List<Int> = c.playOrder()
 
     private fun refresh(c: Player, timelineChanged: Boolean) {
         if (timelineChanged) {
@@ -253,14 +240,3 @@ class PlayerConnection(context: Context) : PlaybackController {
     }
 }
 
-private fun Int.toRepeatMode(): RepeatMode = when (this) {
-    Player.REPEAT_MODE_ONE -> RepeatMode.ONE
-    Player.REPEAT_MODE_ALL -> RepeatMode.ALL
-    else -> RepeatMode.OFF
-}
-
-private fun RepeatMode.toPlayerRepeatMode(): Int = when (this) {
-    RepeatMode.OFF -> Player.REPEAT_MODE_OFF
-    RepeatMode.ALL -> Player.REPEAT_MODE_ALL
-    RepeatMode.ONE -> Player.REPEAT_MODE_ONE
-}

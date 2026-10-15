@@ -46,6 +46,7 @@ import com.rajdeepkonwar.bareplayer.core.ui.R as UiR
 @Composable
 internal fun NowPlayingScreen(
     onCollapse: () -> Unit,
+    onOpenQueue: () -> Unit,
     onAddToPlaylist: (List<Long>) -> Unit,
 ) {
     val playback = LocalAppDependencies.current.playbackController
@@ -68,6 +69,9 @@ internal fun NowPlayingScreen(
                                 painterResource(BareIcons.PlaylistAdd),
                                 contentDescription = stringResource(UiR.string.add_to_playlist),
                             )
+                        }
+                        IconButton(onClick = onOpenQueue) {
+                            Icon(painterResource(BareIcons.Queue), contentDescription = stringResource(R.string.open_queue))
                         }
                     }
                 },

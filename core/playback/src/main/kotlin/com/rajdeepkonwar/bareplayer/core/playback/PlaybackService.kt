@@ -26,20 +26,39 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.rajdeepkonwar.bareplayer.core.domain.playback.QueueMath
+import com.rajdeepkonwar.bareplayer.core.domain.playback.QueueRestorer
+import com.rajdeepkonwar.bareplayer.core.domain.playback.RestoredQueue
+import com.rajdeepkonwar.bareplayer.core.model.QueueSnapshot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.guava.future
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 /**
  * Hosts the ExoPlayer and the media session. Media3 drives the media notification, lock screen,
- * Bluetooth/headset buttons and foreground-service lifecycle from the session.
+ * Bluetooth/headset buttons and foreground-service lifecycle from the session. The queue is saved
+ * to Room as it changes and restored (paused) when the service starts.
  */
 @OptIn(UnstableApi::class)
 class PlaybackService : MediaLibraryService() {
 
     private var session: MediaLibrarySession? = null
     private lateinit var player: ExoPlayer
+    private val mainScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val dependencies: PlaybackDependencies
         get() = (application as PlaybackDependencies.Provider).playbackDependencies
+    private val restorer by lazy { QueueRestorer(dependencies.queueRepository, dependencies.libraryRepository) }
+
+    /** Saving is held off until the startup restore finishes, so it can't overwrite the saved queue. */
+    private var restoreFinished = false
+    private var pendingSave: Job? = null
+    private var positionSaver: Job? = null
 
     /** Tracks skipped in a row, so a queue of only-unplayable files can't loop forever. */
     private var consecutiveSkips = 0
@@ -68,11 +87,22 @@ class PlaybackService : MediaLibraryService() {
         session = MediaLibrarySession.Builder(this, player, SessionCallback())
             .apply { sessionActivity()?.let(::setSessionActivity) }
             .build()
+
+        mainScope.launch {
+            try {
+                val restored = runCatching { restorer.restore() }.getOrNull()
+                // The user may have started something while the saved queue was loading.
+                if (restored != null && player.mediaItemCount == 0) applyRestored(restored)
+            } finally {
+                restoreFinished = true
+            }
+        }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? = session
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        saveNow()
         val p = session?.player
         if (p == null || !p.playWhenReady || p.mediaItemCount == 0 || p.playbackState == Player.STATE_ENDED) {
             stopSelf()
@@ -80,6 +110,8 @@ class PlaybackService : MediaLibraryService() {
     }
 
     override fun onDestroy() {
+        saveNow()
+        mainScope.cancel()
         session?.run {
             player.release()
             release()
@@ -97,6 +129,49 @@ class PlaybackService : MediaLibraryService() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
     }
+
+    private fun applyRestored(restored: RestoredQueue) {
+        val snapshot = restored.snapshot
+        player.setMediaItems(restored.tracks.map { it.toMediaItem() }, snapshot.currentIndex, snapshot.positionMs)
+        player.repeatMode = snapshot.repeatMode.toPlayerRepeatMode()
+        player.shuffleModeEnabled = snapshot.shuffleEnabled
+        if (snapshot.shuffleEnabled && QueueMath.isValidOrder(snapshot.shuffleOrder, restored.tracks.size)) {
+            player.setShuffleOrder(DefaultShuffleOrder(snapshot.shuffleOrder.toIntArray(), Random.nextLong()))
+        }
+        player.prepare()
+    }
+
+    // region Queue persistence
+
+    private fun scheduleSave() {
+        if (!restoreFinished) return
+        pendingSave?.cancel()
+        pendingSave = mainScope.launch {
+            delay(SAVE_DEBOUNCE_MS)
+            saveNow()
+        }
+    }
+
+    private fun saveNow() {
+        if (!restoreFinished || !::player.isInitialized) return
+        pendingSave?.cancel()
+        val snapshot: QueueSnapshot = player.toQueueSnapshot()
+        // Application scope: the write must outlive the service when it is being destroyed.
+        dependencies.applicationScope.launch { dependencies.queueRepository.save(snapshot) }
+    }
+
+    private fun updatePositionSaver(isPlaying: Boolean) {
+        positionSaver?.cancel()
+        if (!isPlaying) return
+        positionSaver = mainScope.launch {
+            while (isActive) {
+                delay(POSITION_SAVE_INTERVAL_MS)
+                saveNow()
+            }
+        }
+    }
+
+    // endregion
 
     private fun applyCurrentFirstShuffle() {
         val count = player.mediaItemCount
@@ -125,8 +200,24 @@ class PlaybackService : MediaLibraryService() {
     }
 
     private val playerListener = object : Player.Listener {
+        override fun onEvents(player: Player, events: Player.Events) {
+            if (events.containsAny(
+                    Player.EVENT_TIMELINE_CHANGED,
+                    Player.EVENT_MEDIA_ITEM_TRANSITION,
+                    Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED,
+                    Player.EVENT_REPEAT_MODE_CHANGED,
+                    Player.EVENT_IS_PLAYING_CHANGED,
+                    Player.EVENT_POSITION_DISCONTINUITY,
+                )
+            ) {
+                scheduleSave()
+            }
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) = updatePositionSaver(isPlaying)
+
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-            if (shuffleModeEnabled) applyCurrentFirstShuffle()
+            if (shuffleModeEnabled && restoreFinished) applyCurrentFirstShuffle()
         }
 
         override fun onTracksChanged(tracks: Tracks) {
@@ -198,6 +289,26 @@ class PlaybackService : MediaLibraryService() {
         ): ListenableFuture<MutableList<MediaItem>> =
             Futures.immediateFuture(mediaItems.mapTo(ArrayList(mediaItems.size)) { it.withPlayableUri() })
 
+        /**
+         * Called when a play command arrives while the player is empty, e.g. the system media
+         * controls' resume button or a Bluetooth play press after the app was killed.
+         */
+        override fun onPlaybackResumption(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            isForPlayback: Boolean,
+        ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> =
+            mainScope.future {
+                val restored = restorer.restore() ?: throw UnsupportedOperationException("No queue to resume")
+                val snapshot = restored.snapshot
+                player.repeatMode = snapshot.repeatMode.toPlayerRepeatMode()
+                MediaSession.MediaItemsWithStartPosition(
+                    restored.tracks.map { it.toMediaItem() },
+                    snapshot.currentIndex,
+                    snapshot.positionMs,
+                )
+            }
+
         override fun onGetLibraryRoot(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
@@ -230,5 +341,7 @@ class PlaybackService : MediaLibraryService() {
 
     private companion object {
         const val ROOT_ID = "root"
+        const val SAVE_DEBOUNCE_MS = 750L
+        const val POSITION_SAVE_INTERVAL_MS = 10_000L
     }
 }

@@ -13,6 +13,13 @@
     <string name="repeat_all">Repeating all</string>
     <string name="repeat_one">Repeating one</string>
     <string name="this_track">This track</string>
+    <string name="queue">Queue</string>
+    <string name="open_queue">Open queue</string>
+    <string name="queue_empty">The queue is empty.</string>
+    <string name="reorder">Drag to reorder</string>
+    <string name="move_up">Move up</string>
+    <string name="move_down">Move down</string>
+    <string name="remove_from_queue">Remove from queue</string>
     <string name="error_unsupported_format">Skipped “%1$s”: this audio format isn\'t supported on this device.</string>
     <string name="error_cannot_play">Couldn\'t play “%1$s”. The file may have been moved or deleted.</string>
 </resources>
