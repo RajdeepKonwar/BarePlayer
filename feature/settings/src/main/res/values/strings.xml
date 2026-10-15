@@ -26,4 +26,5 @@
     <string name="section_about">About</string>
     <string name="privacy_statement">BarePlayer works entirely offline. It has no internet permission, no ads, no analytics and no tracking. Your music and listening history never leave this device.</string>
     <string name="version">Version %1$s</string>
+    <string name="developer_credit">Created and developed by Rajdeep Konwar</string>
 </resources>

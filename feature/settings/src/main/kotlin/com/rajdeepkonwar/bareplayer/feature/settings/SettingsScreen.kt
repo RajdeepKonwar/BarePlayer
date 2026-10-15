@@ -140,7 +140,11 @@ internal fun SettingsScreen(appVersion: String) {
             SectionHeader(stringResource(R.string.section_about))
             Column(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
                 Text(stringResource(R.string.privacy_statement), style = MaterialTheme.typography.bodyMedium)
-                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.developer_credit),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
                 Text(
                     text = stringResource(R.string.version, appVersion),
                     style = MaterialTheme.typography.bodySmall,
