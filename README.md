@@ -187,8 +187,8 @@ material-icons-extended (icons are bundled vectors), any network, analytics, or 
 - [x] Backup rules exclude the rebuildable library database
 - [ ] Play Console: declare the `mediaPlayback` foreground service use (video of background playback)
 - [ ] Play Console Data safety: "No data collected", "No data shared"
-- [ ] Privacy policy URL (required for apps reading media). A one-page "BarePlayer collects no data and has no network access" policy hosted anywhere public
-- [ ] Final app name and store listing (the 512 px store icon is `design/icon/play_store_icon_512.png`; vector source `design/icon/bareplayer_icon.svg`)
+- [ ] Privacy policy URL: host `docs/privacy-policy.html` (e.g. GitHub Pages from the `docs/` folder) after replacing `CONTACT_EMAIL`
+- [ ] Store listing: text in `store/listing.md`, screenshots in `store/screenshots/`, feature graphic `store/feature_graphic_1024x500.png`, icon `design/icon/play_store_icon_512.png`
 - [ ] Upload key and Play App Signing; `keystore.properties` for local release builds
 - [ ] Generate and commit the Baseline Profile; upload an AAB (`./gradlew bundleRelease`)
 

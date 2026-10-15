@@ -31,8 +31,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -60,12 +62,14 @@ import com.rajdeepkonwar.bareplayer.feature.player.R
 import kotlinx.coroutines.launch
 import com.rajdeepkonwar.bareplayer.core.ui.R as UiR
 
-/** Stable keys for queue rows; the same track may appear more than once. */
-private fun keysFor(queue: List<QueueItem>): List<String> {
+/** A queue row with its list key; the same track may appear more than once, so keys count occurrences. */
+private data class QueueRowItem(val key: String, val item: QueueItem)
+
+private fun keyed(queue: List<QueueItem>): List<QueueRowItem> {
     val seen = HashMap<Long, Int>()
     return queue.map { item ->
         val n = seen.merge(item.trackId, 1, Int::plus)!!
-        "${item.trackId}#$n"
+        QueueRowItem("${item.trackId}#$n", item)
     }
 }
 
@@ -77,19 +81,23 @@ internal fun QueueScreen(onBack: () -> Unit) {
     val listState = rememberLazyListState()
 
     // Local copy so drags can reorder instantly; upstream changes replace it when not dragging.
-    val items = remember { mutableStateListOf<QueueItem>() }
+    // Keys travel with their rows, so the list can never be measured against stale keys.
+    val items = remember { mutableStateListOf<QueueRowItem>() }
     val reorder = remember(listState) {
         ReorderState(listState) { from, to -> items.add(to, items.removeAt(from)) }
     }
     LaunchedEffect(state.queue) {
         if (reorder.draggingIndex == null) {
             items.clear()
-            items.addAll(state.queue)
+            items.addAll(keyed(state.queue))
         }
     }
-    LaunchedEffect(Unit) {
+    var scrolledToCurrent by remember { mutableStateOf(false) }
+    LaunchedEffect(items.isNotEmpty()) {
+        if (items.isEmpty() || scrolledToCurrent) return@LaunchedEffect
+        scrolledToCurrent = true
         val position = playback.state.value.currentQueuePosition
-        if (position > 0) listState.scrollToItem(position)
+        if (position in 1 until items.size) listState.scrollToItem(position)
     }
 
     Scaffold(
@@ -117,7 +125,6 @@ internal fun QueueScreen(onBack: () -> Unit) {
             EmptyState(BareIcons.Queue, stringResource(R.string.queue_empty), Modifier.padding(padding))
             return@Scaffold
         }
-        val keys = keysFor(items)
         val moveUp = stringResource(R.string.move_up)
         val moveDown = stringResource(R.string.move_down)
         val remove = stringResource(R.string.remove_from_queue)
@@ -126,7 +133,7 @@ internal fun QueueScreen(onBack: () -> Unit) {
             contentPadding = PaddingValues(bottom = 16.dp),
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
-            itemsIndexed(items, key = { index, _ -> keys[index] }, contentType = { _, _ -> "queue" }) { index, item ->
+            itemsIndexed(items, key = { _, row -> row.key }, contentType = { _, _ -> "queue" }) { index, row ->
                 val dragging = reorder.draggingIndex == index
                 val rowModifier = if (dragging) {
                     Modifier.zIndex(1f).graphicsLayer { translationY = reorder.dragOffset }
@@ -135,12 +142,12 @@ internal fun QueueScreen(onBack: () -> Unit) {
                 }
                 SwipeToRemove(onRemove = { playback.removeQueueItem(index) }, modifier = rowModifier) {
                     QueueRow(
-                        item = item,
+                        item = row.item,
                         isCurrent = index == state.currentQueuePosition && reorder.draggingIndex == null,
                         elevated = dragging,
                         onClick = { playback.playQueuePosition(index) },
                         dragHandle = {
-                            DragHandle(Modifier.reorderHandle(reorder, keys[index], index, items.size, playback::moveQueueItem))
+                            DragHandle(Modifier.reorderHandle(reorder, row.key, index, items.size, playback::moveQueueItem))
                         },
                         modifier = Modifier.semantics {
                             customActions = buildList {
