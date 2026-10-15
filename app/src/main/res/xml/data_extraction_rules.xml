@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Playlists and settings may be backed up; the library index is rebuilt from MediaStore. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="database" path="library.db" />
+        <exclude domain="database" path="library.db-shm" />
+        <exclude domain="database" path="library.db-wal" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="database" path="library.db" />
+        <exclude domain="database" path="library.db-shm" />
+        <exclude domain="database" path="library.db-wal" />
+    </device-transfer>
+</data-extraction-rules>
