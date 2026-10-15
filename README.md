@@ -24,6 +24,10 @@ Requirements: JDK 17+ (JDK 21 recommended) and the Android SDK with platform 37.
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
+On Windows, double-click `run-debug.bat` or `run-release.bat` to build, install and open the app. If
+no phone is connected, they start the `BarePlayer_API37` emulator first. With several devices
+connected, run `set ANDROID_SERIAL=<serial>` (see `adb devices`) in a terminal and launch from there.
+
 `verifyNoInternetPermission` (also part of `check`) fails the build if the merged manifest of any
 variant requests `INTERNET`, `ACCESS_NETWORK_STATE`, `ACCESS_WIFI_STATE` or
 `CHANGE_NETWORK_STATE`. The requested permissions are written to
