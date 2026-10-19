@@ -78,7 +78,7 @@ Create these one-time products. IDs must match exactly and can never be reused o
 USD price; Play converts it for other countries, and you can adjust any country by hand. The app shows
 its own button labels and takes only the price from Play.
 
-Main buttons ("Medium Tip" is highlighted):
+Main buttons:
 
 | Product ID | Name | Description | Price |
 | --- | --- | --- | --- |
@@ -86,7 +86,7 @@ Main buttons ("Medium Tip" is highlighted):
 | `tip_lunch` | Medium Tip | A generous thank-you. Unlocks nothing. | $4.99 |
 | `tip_feature` | Big Tip | A big thank-you. Unlocks nothing. | $9.99 |
 
-Custom tip input amounts (name the products e.g. "$5 tip", description "A thank-you of your choosing. Unlocks nothing."):
+Custom tip slider amounts (name the products e.g. "$5 tip", description "A thank-you of your choosing. Unlocks nothing."):
 
 | Product ID | Price |
 | --- | --- |

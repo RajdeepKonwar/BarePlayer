@@ -23,15 +23,6 @@ class TipCatalogTest {
     }
 
     @Test
-    fun toProducts_marksOnlyLunchAsFeatured() {
-        val products = TipCatalog.toProducts(
-            listOf(offer("tip_coffee", 1_990_000), offer("tip_lunch", 4_990_000), offer("tip_custom_5", 5_000_000)),
-        )
-        assertEquals(listOf(false, true), products.main.map { it.featured })
-        assertEquals(listOf(false), products.custom.map { it.featured })
-    }
-
-    @Test
     fun toProducts_breaksPriceTiesByCatalogOrder() {
         val products = TipCatalog.toProducts(listOf(offer("tip_lunch", 1_000_000), offer("tip_coffee", 1_000_000)))
         assertEquals(listOf("tip_coffee", "tip_lunch"), products.main.map { it.id })

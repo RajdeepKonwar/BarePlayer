@@ -32,11 +32,8 @@
     <string name="tip_coffee">Small Tip</string>
     <string name="tip_lunch">Medium Tip</string>
     <string name="tip_feature">Big Tip</string>
-    <string name="tip_custom_amount">Custom tip amount</string>
-    <string name="tip_custom_amount_hint">Enter amount in dollars</string>
-    <string name="tip_custom_amount_supported">Available amounts: $1, $2, $3, $5, $10, $15, $20, $25, $50, or $100</string>
-    <string name="tip_custom_amount_invalid">Enter one of the available positive amounts.</string>
-    <string name="tip_custom_amount_confirm">Tip %1$s</string>
+    <string name="tip_custom">Custom Tip</string>
+    <string name="tip_custom_confirm">Tip %1$s</string>
     <string name="tip_thanks">Thank you for the tip!</string>
     <string name="tip_pending">Your tip is pending. It will complete once the payment goes through.</string>
     <string name="tip_failed">The tip couldn\'t be completed. You haven\'t been charged.</string>

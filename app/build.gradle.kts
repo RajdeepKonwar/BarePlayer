@@ -18,8 +18,8 @@ android {
 
     defaultConfig {
         applicationId = "com.shearless.bareplayer"
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
     }
 
     buildFeatures {
